@@ -1,0 +1,1002 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LeakCheck API Interface</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0a0a0a, #1a0a2a); /* Darker, subtle violet gradient background */
+            color: #e0e0e0; /* Light gray text */
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            padding: 2rem;
+            box-sizing: border-box;
+        }
+        .container {
+            background-color: rgba(30, 30, 30, 0.85); /* Slightly lighter dark for container with transparency */
+            backdrop-filter: blur(5px); /* Frosted glass effect */
+            padding: 2.5rem;
+            border-radius: 1.25rem; /* More rounded corners */
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6); /* Stronger, diffused shadow */
+            width: 100%;
+            max-width: 1000px;
+            border: 1px solid rgba(58, 12, 163, 0.5); /* Semi-transparent violet border */
+            transition: all 0.3s ease;
+        }
+        .container:hover {
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.8);
+            border-color: rgba(58, 12, 163, 0.8);
+        }
+        .input-field {
+            background-color: rgba(42, 42, 42, 0.7); /* Darker input field with transparency */
+            border: 1px solid rgba(74, 12, 163, 0.6); /* Semi-transparent violet border */
+            color: #e0e0e0;
+            padding: 0.75rem 1rem;
+            border-radius: 0.75rem;
+            width: 100%;
+            box-sizing: border-box;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
+        }
+        .input-field:focus {
+            outline: none;
+            border-color: #4895ef; /* Blue focus */
+            box-shadow: 0 0 0 4px rgba(72, 149, 239, 0.4); /* Stronger focus glow */
+            background-color: rgba(42, 42, 42, 0.9);
+        }
+        .btn-primary {
+            background: linear-gradient(45deg, #7b2cbf, #4a0ca3); /* Violet gradient */
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 20px rgba(123, 44, 191, 0.4); /* Stronger shadow */
+            border: none;
+            position: relative; /* For pseudo-elements if needed */
+            overflow: hidden; /* For ripple effect or similar */
+        }
+        .btn-primary:hover {
+            background: linear-gradient(45deg, #4a0ca3, #7b2cbf); /* Reverse gradient on hover */
+            box-shadow: 0 12px 25px rgba(74, 12, 163, 0.6);
+            transform: translateY(-3px); /* More pronounced lift */
+        }
+        .btn-primary:active {
+            transform: translateY(-1px);
+            box-shadow: 0 5px 10px rgba(74, 12, 163, 0.4);
+        }
+        .error-message {
+            color: #ff6b6b;
+            background-color: rgba(61, 28, 28, 0.8); /* Darker red background with transparency */
+            border: 1px solid #ff6b6b;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            margin-top: 1rem;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(255, 107, 107, 0.3);
+        }
+        .loading-indicator {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 1rem;
+            color: #6a0dad;
+        }
+        .loading-spinner {
+            border: 4px solid rgba(255, 255, 255, 0.2);
+            border-top: 4px solid #4895ef;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+            margin-right: 0.5rem;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        /* Estilos para a tabela de resultados */
+        .results-table-container {
+            overflow-x: auto;
+            margin-top: 1.5rem;
+            border-radius: 1.25rem; /* More rounded table container */
+            border: 1px solid rgba(58, 12, 163, 0.5); /* Semi-transparent violet border */
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+            background-color: rgba(30, 30, 30, 0.7); /* Slightly transparent background */
+            backdrop-filter: blur(3px); /* Subtle blur for table */
+        }
+        .results-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.95rem;
+            min-width: 600px;
+        }
+        .results-table th, .results-table td {
+            padding: 1rem 1.25rem;
+            text-align: left;
+            border-bottom: 1px solid rgba(42, 42, 42, 0.8); /* Darker, semi-transparent line */
+        }
+        .results-table th {
+            background-color: rgba(42, 42, 42, 0.9); /* Darker header with transparency */
+            font-weight: 600;
+            color: #9d4edd;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        .results-table tr:last-child td {
+            border-bottom: none;
+        }
+        .results-table tbody tr:nth-child(odd) {
+            background-color: rgba(30, 30, 30, 0.6); /* Darker background for odd rows with transparency */
+        }
+        .results-table tbody tr:nth-child(even) {
+            background-color: rgba(22, 22, 22, 0.6); /* Even darker background for even rows with transparency */
+        }
+        .results-table tbody tr:hover {
+            background-color: rgba(42, 42, 42, 0.9); /* Darker hover effect with transparency */
+            transition: background-color 0.2s ease;
+        }
+        .data-cell {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+        .data-item {
+            display: flex;
+            align-items: center;
+            padding: 0;
+            color: #e0e0e0;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+        .data-item .data-label-list {
+            padding: 0;
+            margin-right: 0.5rem;
+            color: #9d4edd;
+            font-weight: 600;
+            text-transform: capitalize;
+        }
+        .data-item .data-value-list {
+            color: #e0e0e0;
+        }
+
+        /* --- Estilos para o Dropdown Customizado --- */
+        .custom-select-wrapper {
+            position: relative;
+            width: 100%;
+            margin-bottom: 1.5rem;
+        }
+
+        .select-selected {
+            background-color: rgba(42, 42, 42, 0.7);
+            border: 1px solid rgba(74, 12, 163, 0.6);
+            color: #e0e0e0;
+            padding: 0.75rem 1rem;
+            border-radius: 0.75rem;
+            cursor: pointer;
+            user-select: none;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+        .select-selected:hover {
+            border-color: rgba(72, 149, 239, 0.8);
+            background-color: rgba(42, 42, 42, 0.9);
+        }
+
+        .select-selected:after {
+            position: absolute;
+            content: "";
+            top: 14px;
+            right: 16px;
+            width: 0;
+            height: 0;
+            border: 6px solid transparent;
+            border-color: #4895ef transparent transparent transparent;
+            transition: transform 0.3s ease;
+        }
+
+        .select-selected.select-arrow-active:after {
+            border-color: transparent transparent #4895ef transparent;
+            top: 7px;
+            transform: rotate(180deg); /* Rotate arrow */
+        }
+
+        .select-items {
+            position: absolute;
+            background-color: rgba(42, 42, 42, 0.95); /* More opaque for dropdown options */
+            border: 1px solid rgba(74, 12, 163, 0.8);
+            border-radius: 0.75rem;
+            top: 100%;
+            left: 0;
+            right: 0;
+            z-index: 99;
+            max-height: 200px;
+            overflow-y: auto;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);
+            margin-top: 0.5rem;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            transform: translateY(10px);
+            opacity: 0;
+            pointer-events: none; /* Prevent interaction when hidden */
+        }
+
+        .select-items.select-hide {
+            opacity: 0;
+            transform: translateY(10px);
+            pointer-events: none;
+        }
+        .select-items:not(.select-hide) {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+
+        .select-items div {
+            color: #e0e0e0;
+            padding: 0.75rem 1rem;
+            cursor: pointer;
+            transition: background-color 0.2s ease, color 0.2s ease;
+            border-bottom: 1px solid rgba(58, 58, 58, 0.8); /* Semi-transparent line */
+        }
+
+        .select-items div:last-child {
+            border-bottom: none;
+        }
+
+        .select-items div:hover, .same-as-selected {
+            background-color: #4895ef;
+            color: white;
+        }
+
+        /* --- Estilos para o Botão Copy e Pop-up de Opções --- */
+        .copy-button {
+            background: linear-gradient(45deg, #4895ef, #2a62bf);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(72, 149, 239, 0.4);
+            border: none;
+            font-size: 0.85rem;
+            width: 100%;
+        }
+        .copy-button:hover {
+            background: linear-gradient(45deg, #2a62bf, #4895ef);
+            box-shadow: 0 4px 10px rgba(42, 98, 191, 0.6);
+            transform: translateY(-1px);
+        }
+
+        .copy-options-popup {
+            position: fixed;
+            background-color: rgba(42, 42, 42, 0.95); /* More opaque with blur */
+            backdrop-filter: blur(3px);
+            border: 1px solid rgba(72, 149, 239, 0.8); /* Blue border */
+            border-radius: 0.75rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+            padding: 0.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            z-index: 100;
+            transition: opacity 0.2s ease; /* Smooth fade in/out */
+        }
+
+        .copy-option-btn {
+            background-color: rgba(30, 30, 30, 0.9); /* Darker background for option buttons with transparency */
+            color: #e0e0e0;
+            padding: 0.5rem 0.75rem;
+            border-radius: 0.5rem;
+            font-size: 0.8rem;
+            cursor: pointer;
+            border: 1px solid rgba(58, 58, 58, 0.8);
+            transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+        }
+        .copy-option-btn:hover {
+            background-color: #4895ef;
+            border-color: #4895ef;
+            color: white;
+        }
+
+        /* Estilos para os botões de exportação */
+        .export-buttons-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            margin-left: auto;
+            justify-content: flex-end;
+        }
+
+        .export-button {
+            background: linear-gradient(45deg, #6a0dad, #9d4edd);
+            color: white;
+            padding: 0.6rem 1.2rem;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(106, 13, 173, 0.4);
+            border: none;
+            font-size: 0.85rem;
+        }
+        .export-button:hover {
+            background: linear-gradient(45deg, #9d4edd, #6a0dad);
+            box-shadow: 0 4px 10px rgba(157, 78, 221, 0.6);
+            transform: translateY(-1px);
+        }
+
+        /* Estilo para o botão de limpar resultados */
+        .clear-results-button {
+            background: linear-gradient(45deg, #ef4444, #b91c1c);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(239, 68, 68, 0.4);
+            border: none;
+            width: 100%;
+            margin-bottom: 1.5rem;
+        }
+        .clear-results-button:hover {
+            background: linear-gradient(45deg, #b91c1c, #ef4444);
+            box-shadow: 0 8px 20px rgba(185, 28, 28, 0.6);
+            transform: translateY(-2px);
+        }
+        /* Classe para ocultar elementos */
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="text-3xl font-bold text-center mb-6" style="color: #4895ef;">Suas credenciais foram comprometidas?</h1>
+
+        <div class="mb-4">
+            <label for="queryInput" class="block text-sm font-medium text-gray-300 mb-2">Informação</label>
+            <input type="text" id="queryInput" class="input-field" placeholder="Digite sua informação (ex: email@exemplo.com, nome_de_usuario, 1234567890)">
+        </div>
+
+        <div class="custom-select-wrapper">
+            <label for="queryTypeDisplay" class="block text-sm font-medium text-gray-300 mb-2">Escolha o tipo de Informação</label>
+            <div class="select-selected" id="queryTypeDisplay" data-value="auto">
+                Automático (email, nome de usuário, telefone, hash)
+            </div>
+            <div class="select-items select-hide" id="queryTypeOptions">
+                <div data-value="auto">Automático (email, nome de usuário, telefone, hash)</div>
+                <div data-value="email">E-mail</div>
+                <div data-value="domain">Domínio</div>
+                <div data-value="keyword">Palavra-chave</div>
+                <div data-value="username">Nome de usuário</div>
+                <div data-value="phone">Telefone</div>
+                <div data-value="hash">Hash (SHA256 de email)</div>
+                <div data-value="phash">PHash (SHA256 de senha - Somente Enterprise)</div>
+                <div data-value="origin">Origem (Somente Enterprise)</div>
+                <div data-value="password">Senha (Somente Enterprise)</div>
+            </div>
+        </div>
+
+        <button id="searchButton" class="btn-primary w-full mb-6">Pesquisar</button>
+        <button id="clearResultsButton" class="clear-results-button hidden">Limpar Resultados</button>
+
+
+        <div id="loadingIndicator" class="loading-indicator hidden">
+            <div class="loading-spinner"></div>
+            <span>Carregando...</span>
+        </div>
+
+        <div id="errorMessage" class="error-message hidden"></div>
+
+        <div id="resultsContainer">
+            </div>
+    </div>
+
+    <script type="module">
+        // Elementos do DOM
+        const queryInput = document.getElementById('queryInput');
+        const searchButton = document.getElementById('searchButton');
+        const clearResultsButton = document.getElementById('clearResultsButton');
+        const loadingIndicator = document.getElementById('loadingIndicator');
+        const errorMessage = document.getElementById('errorMessage');
+        const resultsContainer = document.getElementById('resultsContainer');
+
+        // Novos elementos para o dropdown customizado
+        const queryTypeDisplay = document.getElementById('queryTypeDisplay');
+        const queryTypeOptions = document.getElementById('queryTypeOptions');
+        const selectItems = queryTypeOptions.getElementsByTagName('div');
+
+        // Variável global para armazenar os dados dos resultados
+        let currentResultsData = [];
+
+        // Constante para os campos a serem exibidos (otimização)
+        const FIELDS_TO_DISPLAY = [
+            'password', 'email', 'username', 'ip', 'country', 'phone',
+            'name', 'first_name', 'last_name', 'address', 'dob', 'origin',
+            'profile_name', 'city', 'state', 'zip', 'ssn'
+        ];
+
+        // Função para exibir mensagens de erro
+        function showErrorMessage(message) {
+            errorMessage.textContent = message;
+            errorMessage.classList.remove('hidden');
+        }
+
+        // Função para ocultar mensagens de erro
+        function hideErrorMessage() {
+            errorMessage.classList.add('hidden');
+            errorMessage.textContent = '';
+        }
+
+        // Helper function to copy text to clipboard
+        function copyToClipboard(text) {
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            textarea.style.position = 'absolute';
+            textarea.style.left = '-9999px';
+            document.body.appendChild(textarea);
+            textarea.select();
+            try {
+                document.execCommand('copy');
+                console.log('Text copied to clipboard!');
+            } catch (err) {
+                console.error('Failed to copy text: ', err);
+                const messageBox = document.createElement('div');
+                messageBox.textContent = 'Falha ao copiar texto. Por favor, copie manualmente.';
+                messageBox.style.cssText = `
+                    position: fixed;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                    background-color: #3d1c1c;
+                    color: #ff6b6b;
+                    padding: 15px 25px;
+                    border-radius: 8px;
+                    box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+                    z-index: 10000;
+                    font-size: 1rem;
+                    border: 1px solid #ff6b6b;
+                `;
+                document.body.appendChild(messageBox);
+                setTimeout(() => {
+                    document.body.removeChild(messageBox);
+                }, 3000);
+            } finally {
+                document.body.removeChild(textarea);
+            }
+        }
+
+        // Funções de exportação
+        function exportToJson() {
+            if (!currentResultsData || currentResultsData.length === 0) {
+                showErrorMessage("Não há dados para exportar para JSON.");
+                return;
+            }
+            const jsonString = JSON.stringify(currentResultsData, null, 2);
+            const blob = new Blob([jsonString], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'leakcheck_results.json';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        function exportToTxt() {
+            if (!currentResultsData || currentResultsData.length === 0) {
+                showErrorMessage("Não há dados para exportar para TXT.");
+                return;
+            }
+
+            let maxLineLength = 0;
+            let tempLines = [];
+
+            currentResultsData.forEach(item => {
+                let itemLines = [];
+                FIELDS_TO_DISPLAY.forEach(field => {
+                    let value = item[field];
+                    if (Array.isArray(value)) {
+                        value = value.join(', ');
+                    } else if (typeof value === 'object' && value !== null) {
+                        value = JSON.stringify(value);
+                    }
+                    if (value !== null && value !== undefined && value !== "") {
+                        const line = `${field.charAt(0).toUpperCase() + field.slice(1)}: ${value}`;
+                        itemLines.push(line);
+                        if (line.length > maxLineLength) {
+                            maxLineLength = line.length;
+                        }
+                    }
+                });
+                
+                if (item.source) {
+                    const sourceLine = `Source: ${item.source.name || 'Unknown'}`;
+                    itemLines.push(sourceLine);
+                    if (sourceLine.length > maxLineLength) {
+                        maxLineLength = sourceLine.length;
+                    }
+                    const breachLine = `Last Breach: ${item.source.breach_date || 'N/A'}`;
+                    itemLines.push(breachLine);
+                    if (breachLine.length > maxLineLength) {
+                        maxLineLength = breachLine.length;
+                    }
+                }
+                tempLines.push(itemLines);
+            });
+
+            if (maxLineLength < 20) {
+                maxLineLength = 20;
+            }
+
+            const separator = '#'.repeat(maxLineLength);
+
+            let txtContent = '';
+            tempLines.forEach((itemLines, index) => {
+                itemLines.forEach(line => {
+                    txtContent += line + '\n';
+                });
+                if (index < tempLines.length - 1) {
+                    txtContent += separator + '\n';
+                }
+            });
+
+            const blob = new Blob([txtContent], { type: 'text/plain;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'leakcheck_results.txt';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        function exportToPdf() {
+            if (!currentResultsData || currentResultsData.length === 0) {
+                showErrorMessage("Não há dados para exportar para PDF.");
+                return;
+            }
+
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF({
+                orientation: 'portrait',
+                unit: 'pt',
+                format: 'a4'
+            });
+
+            const pageHeight = doc.internal.pageSize.height;
+            const pageWidth = doc.internal.pageSize.width;
+            const margin = 36;
+            let y = margin;
+            const lineHeight = 12;
+            const sectionSpacing = 20;
+
+            const bgColor = [30, 30, 30];
+            const textColor = [224, 224, 224];
+            const violetDetail = [157, 78, 221];
+            const blueDetail = [72, 149, 239];
+
+            doc.setFillColor(bgColor[0], bgColor[1], bgColor[2]);
+            doc.rect(0, 0, pageWidth, pageHeight, 'F');
+
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(20);
+            doc.setTextColor(blueDetail[0], blueDetail[1], blueDetail[2]);
+            doc.text("Relatório LeakCheck", pageWidth / 2, y, { align: 'center' });
+            y += lineHeight * 2;
+
+            doc.setFont('helvetica', 'normal');
+            doc.setFontSize(10);
+            doc.setTextColor(textColor[0], textColor[1], textColor[2]);
+            doc.text(`Encontrados: ${currentResultsData.length}`, margin, y);
+            y += lineHeight * 2;
+
+            currentResultsData.forEach((item, index) => {
+                let estimatedItemHeight = 0;
+                const fieldsInItem = FIELDS_TO_DISPLAY.filter(field => item.hasOwnProperty(field) && item[field] !== null && item[field] !== undefined && item[field] !== "");
+                
+                estimatedItemHeight = (fieldsInItem.length * lineHeight) + (item.source ? (2 * lineHeight) : 0) + lineHeight;
+
+                if (y + estimatedItemHeight + margin > pageHeight) {
+                    doc.addPage();
+                    doc.setFillColor(bgColor[0], bgColor[1], bgColor[2]);
+                    doc.rect(0, 0, pageWidth, pageHeight, 'F');
+                    y = margin;
+                }
+
+                const cardPadding = 10;
+                const cardWidth = pageWidth - (2 * margin);
+                const cardStartX = margin;
+                const cardStartY = y - cardPadding / 2;
+
+                let currentItemContentHeight = 0;
+                fieldsInItem.forEach(() => currentItemContentHeight += lineHeight);
+                if (item.source) {
+                    currentItemContentHeight += (2 * lineHeight);
+                }
+                const cardHeight = currentItemContentHeight + cardPadding;
+
+
+                doc.setFillColor(30, 30, 30);
+                doc.setDrawColor(violetDetail[0], violetDetail[1], violetDetail[2]);
+                doc.setLineWidth(1);
+                doc.roundedRect(cardStartX, cardStartY, cardWidth, cardHeight, 5, 5, 'FD');
+
+                y += cardPadding;
+
+                doc.setFontSize(10);
+                doc.setFont('helvetica', 'normal');
+
+                fieldsInItem.forEach(field => {
+                    let value = item[field];
+                    if (Array.isArray(value)) {
+                        value = value.join(', ');
+                    } else if (typeof value === 'object') {
+                        value = JSON.stringify(value);
+                    }
+                    
+                    doc.setTextColor(violetDetail[0], violetDetail[1], violetDetail[2]);
+                    doc.text(`${field.charAt(0).toUpperCase() + field.slice(1)}:`, margin + cardPadding, y);
+                    
+                    doc.setTextColor(textColor[0], textColor[1], textColor[2]);
+                    const textValue = doc.splitTextToSize(value, cardWidth - (2 * cardPadding) - doc.getTextWidth(`${field.charAt(0).toUpperCase() + field.slice(1)}: `));
+                    doc.text(textValue, margin + cardPadding + doc.getTextWidth(`${field.charAt(0).toUpperCase() + field.slice(1)}: `), y);
+                    
+                    y += lineHeight * textValue.length;
+                });
+
+                if (item.source) {
+                    doc.setTextColor(violetDetail[0], violetDetail[1], violetDetail[2]);
+                    doc.text(`Source:`, margin + cardPadding, y);
+                    doc.setTextColor(textColor[0], textColor[1], textColor[2]);
+                    doc.text(`${item.source.name || 'Unknown'}`, margin + cardPadding + doc.getTextWidth(`Source: `), y);
+                    y += lineHeight;
+
+                    doc.setTextColor(violetDetail[0], violetDetail[1], violetDetail[2]);
+                    doc.text(`Last Breach:`, margin + cardPadding, y);
+                    doc.setTextColor(textColor[0], textColor[1], textColor[2]);
+                    doc.text(`${item.source.breach_date || 'N/A'}`, margin + cardPadding + doc.getTextWidth(`Last Breach: `), y);
+                    y += lineHeight;
+                }
+
+                y += sectionSpacing;
+            });
+
+            doc.save("leakcheck_results.pdf");
+        }
+
+
+        // Função para renderizar os resultados em formato de tabela
+        function renderResults(data) {
+            currentResultsData = data.result;
+
+            resultsContainer.innerHTML = '';
+
+            if (!data || data.found === 0 || !data.result || data.result.length === 0) {
+                resultsContainer.innerHTML = '<p class="text-center text-gray-400">Nenhum resultado encontrado para sua informação.</p>';
+                clearResultsButton.classList.add('hidden');
+                return;
+            }
+
+            clearResultsButton.classList.remove('hidden');
+
+            const summaryAndExportContainer = document.createElement('div');
+            summaryAndExportContainer.className = 'flex flex-col md:flex-row items-center justify-between bg-gray-700 p-4 rounded-md mb-6 border border-gray-600'; 
+
+            const summaryDiv = document.createElement('div');
+            summaryDiv.innerHTML = `
+                <p><span class="font-semibold text-gray-300">Encontrados:</span> <span class="text-white">${data.found}</span></p>
+            `;
+            summaryAndExportContainer.appendChild(summaryDiv);
+
+            const exportButtonsContainer = document.createElement('div');
+            exportButtonsContainer.className = 'export-buttons-container mt-4 md:mt-0';
+
+            const exportPdfBtn = document.createElement('button');
+            exportPdfBtn.className = 'export-button';
+            exportPdfBtn.textContent = 'Export PDF';
+            exportPdfBtn.onclick = exportToPdf;
+            exportButtonsContainer.appendChild(exportPdfBtn);
+
+            const exportJsonBtn = document.createElement('button');
+            exportJsonBtn.className = 'export-button';
+            exportJsonBtn.textContent = 'Export JSON';
+            exportJsonBtn.onclick = exportToJson;
+            exportButtonsContainer.appendChild(exportJsonBtn);
+
+            const exportTxtBtn = document.createElement('button');
+            exportTxtBtn.className = 'export-button';
+            exportTxtBtn.textContent = 'Export TXT';
+            exportTxtBtn.onclick = exportToTxt;
+            exportButtonsContainer.appendChild(exportTxtBtn);
+
+            summaryAndExportContainer.appendChild(exportButtonsContainer);
+            resultsContainer.appendChild(summaryAndExportContainer);
+
+
+            const tableContainer = document.createElement('div');
+            tableContainer.className = 'results-table-container';
+
+            const table = document.createElement('table');
+            table.className = 'results-table';
+
+            table.innerHTML = `
+                <thead>
+                    <tr>
+                        <th>Data</th>
+                        <th>Source</th>
+                        <th>Last breach</th>
+                        <th></th> </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            `;
+            const tbody = table.querySelector('tbody');
+
+            data.result.forEach(item => {
+                const row = document.createElement('tr');
+
+                const dataCell = document.createElement('td');
+                dataCell.className = 'data-cell';
+                let formattedTextForCopy = '';
+                
+                dataCell.innerHTML = FIELDS_TO_DISPLAY.map(field => {
+                    if (item.hasOwnProperty(field) && item[field] !== null && item[field] !== undefined && item[field] !== "") {
+                        let value = item[field];
+                        if (Array.isArray(value)) {
+                            value = value.join(', ');
+                        } else if (typeof value === 'object') {
+                            value = JSON.stringify(value);
+                        }
+                        formattedTextForCopy += `${field}: ${value}\n`;
+                        return `
+                            <div class="data-item">
+                                <span class="data-label-list">${field}:</span>
+                                <span class="data-value-list">${value}</span>
+                            </div>
+                        `;
+                    }
+                    return '';
+                }).join('') || '<p class="text-gray-500">N/A</p>';
+                row.appendChild(dataCell);
+
+                const sourceCell = document.createElement('td');
+                sourceCell.textContent = item.source ? item.source.name || 'Unknown' : 'Unknown';
+                row.appendChild(sourceCell);
+
+                const breachDateCell = document.createElement('td');
+                breachDateCell.textContent = item.source && item.source.breach_date ? item.source.breach_date : 'N/A';
+                row.appendChild(breachDateCell);
+                
+                const copyCell = document.createElement('td');
+                copyCell.style.position = 'relative'; 
+
+                const copyButton = document.createElement('button');
+                copyButton.className = 'copy-button';
+                copyButton.textContent = 'Copy';
+                copyCell.appendChild(copyButton);
+
+                const copyOptionsPopup = document.createElement('div');
+                copyOptionsPopup.className = 'copy-options-popup';
+                copyOptionsPopup.style.display = 'none';
+
+                const copyFormattedBtn = document.createElement('button');
+                copyFormattedBtn.className = 'copy-option-btn';
+                copyFormattedBtn.textContent = 'Copy Formatted';
+                copyFormattedBtn.onclick = () => {
+                    copyToClipboard(formattedTextForCopy.trim());
+                    copyOptionsPopup.style.display = 'none';
+                };
+                copyOptionsPopup.appendChild(copyFormattedBtn);
+
+                const copyRawJsonBtn = document.createElement('button');
+                copyRawJsonBtn.className = 'copy-option-btn';
+                copyRawJsonBtn.textContent = 'Copy Raw JSON';
+                copyRawJsonBtn.onclick = () => {
+                    copyToClipboard(JSON.stringify(item, null, 2));
+                    copyOptionsPopup.style.display = 'none';
+                };
+                copyOptionsPopup.appendChild(copyRawJsonBtn);
+
+                copyCell.appendChild(copyOptionsPopup);
+                row.appendChild(copyCell);
+
+                // Event listener para o botão "Copy"
+                copyButton.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    document.querySelectorAll('.copy-options-popup').forEach(popup => {
+                        if (popup !== copyOptionsPopup) {
+                            popup.style.display = 'none';
+                        }
+                    });
+                    
+                    // Mostra o popup para que suas dimensões possam ser calculadas
+                    copyOptionsPopup.style.display = 'flex'; 
+
+                    const buttonRect = copyButton.getBoundingClientRect();
+                    const popupWidth = copyOptionsPopup.offsetWidth;
+                    const popupHeight = copyOptionsPopup.offsetHeight;
+                    const viewportWidth = window.innerWidth;
+                    const viewportHeight = window.innerHeight;
+
+                    // Calcula a posição final do pop-up em relação à viewport
+                    let finalLeft = buttonRect.right + 5; // Tenta posicionar 5px à direita do botão
+                    if (finalLeft + popupWidth > viewportWidth) {
+                        // Não há espaço suficiente à direita, posiciona à esquerda do botão
+                        finalLeft = buttonRect.left - popupWidth - 5; // 5px de espaçamento à esquerda
+                    }
+
+                    // Posicionamento vertical: Centralizado com o botão, ajustando se sair da tela
+                    let finalTop = buttonRect.top + (buttonRect.height / 2) - (popupHeight / 2);
+
+                    // Ajusta se o pop-up for cortado na parte superior ou inferior da viewport
+                    if (finalTop < 0) { // Se o topo for negativo (cortado acima)
+                        finalTop = 5; // Alinha com o topo da viewport com uma pequena margem
+                    } else if (finalTop + popupHeight > viewportHeight) { // Se a parte inferior for cortada
+                        finalTop = viewportHeight - popupHeight - 5; // Alinha com a parte inferior da viewport com uma pequena margem
+                        if (finalTop < 0) { // Se ainda for negativo, fixa no topo da viewport
+                            finalTop = 5;
+                        }
+                    }
+
+                    copyOptionsPopup.style.top = finalTop + 'px';
+                    copyOptionsPopup.style.left = finalLeft + 'px';
+                    copyOptionsPopup.style.width = buttonRect.width + 'px'; // Mantém a largura do botão
+                    copyOptionsPopup.style.position = 'fixed'; // Garante que ele se posicione em relação à viewport
+                });
+
+                tbody.appendChild(row);
+            });
+
+            tableContainer.appendChild(table);
+            resultsContainer.appendChild(tableContainer);
+        }
+
+        // Função para limpar todos os resultados e mensagens de erro
+        function clearResults() {
+            resultsContainer.innerHTML = '';
+            hideErrorMessage();
+            queryInput.value = '';
+            currentResultsData = [];
+            clearResultsButton.classList.add('hidden');
+            queryTypeDisplay.innerHTML = 'Automático (email, nome de usuário, telefone, hash)';
+            queryTypeDisplay.setAttribute('data-value', 'auto');
+            for (let j = 0; j < selectItems.length; j++) {
+                selectItems[j].classList.remove('same-as-selected');
+            }
+            selectItems[0].classList.add('same-as-selected');
+        }
+
+        // Função principal para fazer a chamada da API
+        async function performSearch() {
+            const query = queryInput.value.trim();
+            const type = queryTypeDisplay.getAttribute('data-value');
+
+            if (!query) {
+                showErrorMessage("Por favor, digite sua informação.");
+                return;
+            }
+
+            hideErrorMessage();
+            resultsContainer.innerHTML = '';
+            loadingIndicator.classList.remove('hidden');
+            searchButton.disabled = true;
+
+            let apiUrl = `/api/v2/query/${encodeURIComponent(query)}`;
+            if (type !== 'auto') {
+                apiUrl += `?type=${type}`;
+            }
+
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    let errorMessageText = `Erro da API: ${response.status} - ${response.statusText}`;
+                    if (data && data.error) {
+                        errorMessageText += `\nDetalhes: ${data.error}`;
+                    }
+                    showErrorMessage(errorMessageText);
+                    clearResultsButton.classList.add('hidden');
+                    return;
+                }
+
+                renderResults(data);
+
+            } catch (error) {
+                console.error("Erro ao buscar dados da API:", error);
+                if (error instanceof TypeError && error.message === 'Failed to fetch') {
+                    showErrorMessage("Erro de conexão: Não foi possível alcançar sua API Python. Verifique se o servidor Flask está rodando.");
+                } else {
+                    showErrorMessage("Erro ao conectar com a API. Verifique sua conexão.");
+                }
+                clearResultsButton.classList.add('hidden');
+            } finally {
+                loadingIndicator.classList.add('hidden');
+                searchButton.disabled = false;
+            }
+        }
+
+        // --- Lógica do Dropdown Customizado ---
+        queryTypeDisplay.addEventListener('click', function(e) {
+            e.stopPropagation();
+            closeAllSelect(this);
+            queryTypeOptions.classList.toggle('select-hide');
+            this.classList.toggle('select-arrow-active');
+        });
+
+        for (let i = 0; i < selectItems.length; i++) {
+            selectItems[i].addEventListener('click', function(e) {
+                queryTypeDisplay.innerHTML = this.innerHTML;
+                queryTypeDisplay.setAttribute('data-value', this.getAttribute('data-value'));
+
+                for (let j = 0; j < selectItems.length; j++) {
+                    selectItems[j].classList.remove('same-as-selected');
+                }
+                this.classList.add('same-as-selected');
+
+                queryTypeOptions.classList.add('select-hide');
+                queryTypeDisplay.classList.remove('select-arrow-active');
+            });
+        }
+
+        function closeAllSelect(elmnt) {
+            const arrNo = [];
+            const x = document.getElementsByClassName("select-items");
+            const y = document.getElementsByClassName("select-selected");
+            for (let i = 0; i < y.length; i++) {
+                if (elmnt == y[i]) {
+                    arrNo.push(i)
+                } else {
+                    y[i].classList.remove("select-arrow-active");
+                }
+            }
+            for (let i = 0; i < x.length; i++) {
+                if (arrNo.indexOf(i)) {
+                    x[i].classList.add("select-hide");
+                }
+            }
+        }
+
+        document.addEventListener('click', (e) => {
+            closeAllSelect(e.target);
+            document.querySelectorAll('.copy-options-popup').forEach(popup => {
+                if (!popup.contains(e.target) && !e.target.classList.contains('copy-button')) {
+                    popup.style.display = 'none';
+                }
+            });
+        });
+
+        // Event Listeners
+        searchButton.addEventListener('click', performSearch);
+        clearResultsButton.addEventListener('click', clearResults);
+
+        // Inicialização do frontend
+        window.onload = () => {
+            console.log("Frontend carregado. A chave da API LeakCheck é gerenciada pelo backend Python.");
+            clearResultsButton.classList.add('hidden');
+        };
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,14 @@
+version: '3.8' # Versão da sintaxe do Docker Compose
+
+services:
+  web: # Nome do serviço (você pode mudar)
+    build: . # Constrói a imagem a partir do Dockerfile no diretório atual
+    ports:
+      - "5000:5000" # Mapeia a porta 5000 do host para a porta 5000 do contêiner
+    environment:
+      # ATENÇÃO: Substitua "SUA_CHAVE_LEAKCHECK_AQUI" pela sua chave real da API LeakCheck.
+      # É mais seguro passar a chave aqui do que hardcode no Dockerfile para produção.
+      LEAKCHECK_API_KEY: "SUA_CHAVE_LEAKCHECK_AQUI"
+    volumes:
+      - .:/app # Monta o diretório atual do host no /app do contêiner para desenvolvimento
+    restart: always # Reinicia o contêiner automaticamente se ele parar
