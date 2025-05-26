@@ -10,24 +10,25 @@
     <style>
         body {
             font-family: 'Inter', sans-serif;
-            background: linear-gradient(135deg, #0a0a0a, #1a0a2a); /* Darker, subtle violet gradient background */
-            color: #e0e0e0; /* Light gray text */
+            background: linear-gradient(135deg, #0a0a0a, #1a0a2a);
+            color: #e0e0e0;
             display: flex;
             justify-content: center;
             align-items: flex-start;
             min-height: 100vh;
             padding: 2rem;
             box-sizing: border-box;
+            overflow-x: hidden; /* Evita rolagem horizontal indesejada */
         }
         .container {
-            background-color: rgba(30, 30, 30, 0.85); /* Slightly lighter dark for container with transparency */
-            backdrop-filter: blur(5px); /* Frosted glass effect */
+            background-color: rgba(30, 30, 30, 0.85);
+            backdrop-filter: blur(5px);
             padding: 2.5rem;
-            border-radius: 1.25rem; /* More rounded corners */
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6); /* Stronger, diffused shadow */
+            border-radius: 1.25rem;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
             width: 100%;
             max-width: 1000px;
-            border: 1px solid rgba(58, 12, 163, 0.5); /* Semi-transparent violet border */
+            border: 1px solid rgba(58, 12, 163, 0.5);
             transition: all 0.3s ease;
         }
         .container:hover {
@@ -35,8 +36,8 @@
             border-color: rgba(58, 12, 163, 0.8);
         }
         .input-field {
-            background-color: rgba(42, 42, 42, 0.7); /* Darker input field with transparency */
-            border: 1px solid rgba(74, 12, 163, 0.6); /* Semi-transparent violet border */
+            background-color: rgba(42, 42, 42, 0.7);
+            border: 1px solid rgba(74, 12, 163, 0.6);
             color: #e0e0e0;
             padding: 0.75rem 1rem;
             border-radius: 0.75rem;
@@ -46,27 +47,27 @@
         }
         .input-field:focus {
             outline: none;
-            border-color: #4895ef; /* Blue focus */
-            box-shadow: 0 0 0 4px rgba(72, 149, 239, 0.4); /* Stronger focus glow */
+            border-color: #4895ef;
+            box-shadow: 0 0 0 4px rgba(72, 149, 239, 0.4);
             background-color: rgba(42, 42, 42, 0.9);
         }
         .btn-primary {
-            background: linear-gradient(45deg, #7b2cbf, #4a0ca3); /* Violet gradient */
+            background: linear-gradient(45deg, #7b2cbf, #4a0ca3);
             color: white;
             padding: 0.75rem 1.5rem;
             border-radius: 0.75rem;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
-            box-shadow: 0 8px 20px rgba(123, 44, 191, 0.4); /* Stronger shadow */
+            box-shadow: 0 8px 20px rgba(123, 44, 191, 0.4);
             border: none;
-            position: relative; /* For pseudo-elements if needed */
-            overflow: hidden; /* For ripple effect or similar */
+            position: relative;
+            overflow: hidden;
         }
         .btn-primary:hover {
-            background: linear-gradient(45deg, #4a0ca3, #7b2cbf); /* Reverse gradient on hover */
+            background: linear-gradient(45deg, #4a0ca3, #7b2cbf);
             box-shadow: 0 12px 25px rgba(74, 12, 163, 0.6);
-            transform: translateY(-3px); /* More pronounced lift */
+            transform: translateY(-3px);
         }
         .btn-primary:active {
             transform: translateY(-1px);
@@ -74,7 +75,7 @@
         }
         .error-message {
             color: #ff6b6b;
-            background-color: rgba(61, 28, 28, 0.8); /* Darker red background with transparency */
+            background-color: rgba(61, 28, 28, 0.8);
             border: 1px solid #ff6b6b;
             padding: 0.75rem;
             border-radius: 0.5rem;
@@ -102,15 +103,14 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
-        /* Estilos para a tabela de resultados */
         .results-table-container {
             overflow-x: auto;
             margin-top: 1.5rem;
-            border-radius: 1.25rem; /* More rounded table container */
-            border: 1px solid rgba(58, 12, 163, 0.5); /* Semi-transparent violet border */
+            border-radius: 1.25rem;
+            border: 1px solid rgba(58, 12, 163, 0.5);
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
-            background-color: rgba(30, 30, 30, 0.7); /* Slightly transparent background */
-            backdrop-filter: blur(3px); /* Subtle blur for table */
+            background-color: rgba(30, 30, 30, 0.7);
+            backdrop-filter: blur(3px);
         }
         .results-table {
             width: 100%;
@@ -121,10 +121,10 @@
         .results-table th, .results-table td {
             padding: 1rem 1.25rem;
             text-align: left;
-            border-bottom: 1px solid rgba(42, 42, 42, 0.8); /* Darker, semi-transparent line */
+            border-bottom: 1px solid rgba(42, 42, 42, 0.8);
         }
         .results-table th {
-            background-color: rgba(42, 42, 42, 0.9); /* Darker header with transparency */
+            background-color: rgba(42, 42, 49, 0.9);
             font-weight: 600;
             color: #9d4edd;
             position: sticky;
@@ -135,13 +135,13 @@
             border-bottom: none;
         }
         .results-table tbody tr:nth-child(odd) {
-            background-color: rgba(30, 30, 30, 0.6); /* Darker background for odd rows with transparency */
+            background-color: rgba(30, 30, 30, 0.6);
         }
         .results-table tbody tr:nth-child(even) {
-            background-color: rgba(22, 22, 22, 0.6); /* Even darker background for even rows with transparency */
+            background-color: rgba(22, 22, 22, 0.6);
         }
         .results-table tbody tr:hover {
-            background-color: rgba(42, 42, 42, 0.9); /* Darker hover effect with transparency */
+            background-color: rgba(42, 42, 42, 0.9);
             transition: background-color 0.2s ease;
         }
         .data-cell {
@@ -167,14 +167,11 @@
         .data-item .data-value-list {
             color: #e0e0e0;
         }
-
-        /* --- Estilos para o Dropdown Customizado --- */
         .custom-select-wrapper {
             position: relative;
             width: 100%;
             margin-bottom: 1.5rem;
         }
-
         .select-selected {
             background-color: rgba(42, 42, 42, 0.7);
             border: 1px solid rgba(74, 12, 163, 0.6);
@@ -192,7 +189,6 @@
             border-color: rgba(72, 149, 239, 0.8);
             background-color: rgba(42, 42, 42, 0.9);
         }
-
         .select-selected:after {
             position: absolute;
             content: "";
@@ -204,16 +200,14 @@
             border-color: #4895ef transparent transparent transparent;
             transition: transform 0.3s ease;
         }
-
         .select-selected.select-arrow-active:after {
             border-color: transparent transparent #4895ef transparent;
             top: 7px;
-            transform: rotate(180deg); /* Rotate arrow */
+            transform: rotate(180deg);
         }
-
         .select-items {
             position: absolute;
-            background-color: rgba(42, 42, 42, 0.95); /* More opaque for dropdown options */
+            background-color: rgba(42, 42, 42, 0.95);
             border: 1px solid rgba(74, 12, 163, 0.8);
             border-radius: 0.75rem;
             top: 100%;
@@ -227,9 +221,8 @@
             transition: opacity 0.3s ease, transform 0.3s ease;
             transform: translateY(10px);
             opacity: 0;
-            pointer-events: none; /* Prevent interaction when hidden */
+            pointer-events: none;
         }
-
         .select-items.select-hide {
             opacity: 0;
             transform: translateY(10px);
@@ -240,76 +233,45 @@
             transform: translateY(0);
             pointer-events: auto;
         }
-
         .select-items div {
             color: #e0e0e0;
             padding: 0.75rem 1rem;
             cursor: pointer;
             transition: background-color 0.2s ease, color 0.2s ease;
-            border-bottom: 1px solid rgba(58, 58, 58, 0.8); /* Semi-transparent line */
+            border-bottom: 1px solid rgba(58, 58, 58, 0.8);
         }
-
         .select-items div:last-child {
             border-bottom: none;
         }
-
         .select-items div:hover, .same-as-selected {
             background-color: #4895ef;
             color: white;
         }
-
-        /* --- Estilos para o Botão Copy e Pop-up de Opções --- */
-        .copy-button {
+        /* Estilos para os botões de cópia diretos */
+        .copy-buttons-container {
+            display: flex;
+            flex-direction: column; /* Botões um abaixo do outro por padrão */
+            gap: 0.4rem; /* Espaçamento entre os botões */
+            align-items: flex-end; /* Alinha os botões à direita na célula */
+        }
+        .copy-option-btn-direct {
             background: linear-gradient(45deg, #4895ef, #2a62bf);
             color: white;
-            padding: 0.5rem 1rem;
-            border-radius: 0.5rem;
+            padding: 0.4rem 0.8rem;
+            border-radius: 0.4rem;
             font-weight: 500;
             cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 2px 8px rgba(72, 149, 239, 0.4);
+            transition: all 0.2s ease;
+            box-shadow: 0 1px 4px rgba(72, 149, 239, 0.3);
             border: none;
-            font-size: 0.85rem;
-            width: 100%;
+            font-size: 0.75rem; /* Fonte menor para caber melhor */
+            white-space: nowrap; /* Evita quebra de linha no texto do botão */
         }
-        .copy-button:hover {
+        .copy-option-btn-direct:hover {
             background: linear-gradient(45deg, #2a62bf, #4895ef);
-            box-shadow: 0 4px 10px rgba(42, 98, 191, 0.6);
+            box-shadow: 0 2px 6px rgba(42, 98, 191, 0.5);
             transform: translateY(-1px);
         }
-
-        .copy-options-popup {
-            position: fixed;
-            background-color: rgba(42, 42, 42, 0.95); /* More opaque with blur */
-            backdrop-filter: blur(3px);
-            border: 1px solid rgba(72, 149, 239, 0.8); /* Blue border */
-            border-radius: 0.75rem;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
-            padding: 0.5rem;
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-            z-index: 100;
-            transition: opacity 0.2s ease; /* Smooth fade in/out */
-        }
-
-        .copy-option-btn {
-            background-color: rgba(30, 30, 30, 0.9); /* Darker background for option buttons with transparency */
-            color: #e0e0e0;
-            padding: 0.5rem 0.75rem;
-            border-radius: 0.5rem;
-            font-size: 0.8rem;
-            cursor: pointer;
-            border: 1px solid rgba(58, 58, 58, 0.8);
-            transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
-        }
-        .copy-option-btn:hover {
-            background-color: #4895ef;
-            border-color: #4895ef;
-            color: white;
-        }
-
-        /* Estilos para os botões de exportação */
         .export-buttons-container {
             display: flex;
             flex-wrap: wrap;
@@ -317,7 +279,6 @@
             margin-left: auto;
             justify-content: flex-end;
         }
-
         .export-button {
             background: linear-gradient(45deg, #6a0dad, #9d4edd);
             color: white;
@@ -335,8 +296,6 @@
             box-shadow: 0 4px 10px rgba(157, 78, 221, 0.6);
             transform: translateY(-1px);
         }
-
-        /* Estilo para o botão de limpar resultados */
         .clear-results-button {
             background: linear-gradient(45deg, #ef4444, #b91c1c);
             color: white;
@@ -355,7 +314,6 @@
             box-shadow: 0 8px 20px rgba(185, 28, 28, 0.6);
             transform: translateY(-2px);
         }
-        /* Classe para ocultar elementos */
         .hidden {
             display: none;
         }
@@ -405,7 +363,6 @@
     </div>
 
     <script type="module">
-        // Elementos do DOM
         const queryInput = document.getElementById('queryInput');
         const searchButton = document.getElementById('searchButton');
         const clearResultsButton = document.getElementById('clearResultsButton');
@@ -413,34 +370,28 @@
         const errorMessage = document.getElementById('errorMessage');
         const resultsContainer = document.getElementById('resultsContainer');
 
-        // Novos elementos para o dropdown customizado
         const queryTypeDisplay = document.getElementById('queryTypeDisplay');
         const queryTypeOptions = document.getElementById('queryTypeOptions');
         const selectItems = queryTypeOptions.getElementsByTagName('div');
 
-        // Variável global para armazenar os dados dos resultados
         let currentResultsData = [];
 
-        // Constante para os campos a serem exibidos (otimização)
         const FIELDS_TO_DISPLAY = [
             'password', 'email', 'username', 'ip', 'country', 'phone',
             'name', 'first_name', 'last_name', 'address', 'dob', 'origin',
             'profile_name', 'city', 'state', 'zip', 'ssn'
         ];
 
-        // Função para exibir mensagens de erro
         function showErrorMessage(message) {
             errorMessage.textContent = message;
             errorMessage.classList.remove('hidden');
         }
 
-        // Função para ocultar mensagens de erro
         function hideErrorMessage() {
             errorMessage.classList.add('hidden');
             errorMessage.textContent = '';
         }
 
-        // Helper function to copy text to clipboard
         function copyToClipboard(text) {
             const textarea = document.createElement('textarea');
             textarea.value = text;
@@ -478,7 +429,6 @@
             }
         }
 
-        // Funções de exportação
         function exportToJson() {
             if (!currentResultsData || currentResultsData.length === 0) {
                 showErrorMessage("Não há dados para exportar para JSON.");
@@ -680,10 +630,8 @@
         }
 
 
-        // Função para renderizar os resultados em formato de tabela
         function renderResults(data) {
             currentResultsData = data.result;
-
             resultsContainer.innerHTML = '';
 
             if (!data || data.found === 0 || !data.result || data.result.length === 0) {
@@ -740,7 +688,7 @@
                         <th>Data</th>
                         <th>Source</th>
                         <th>Last breach</th>
-                        <th></th> </tr>
+                        <th>Ações</th> </tr>
                 </thead>
                 <tbody>
                 </tbody>
@@ -782,82 +730,27 @@
                 breachDateCell.textContent = item.source && item.source.breach_date ? item.source.breach_date : 'N/A';
                 row.appendChild(breachDateCell);
                 
-                const copyCell = document.createElement('td');
-                copyCell.style.position = 'relative'; 
-
-                const copyButton = document.createElement('button');
-                copyButton.className = 'copy-button';
-                copyButton.textContent = 'Copy';
-                copyCell.appendChild(copyButton);
-
-                const copyOptionsPopup = document.createElement('div');
-                copyOptionsPopup.className = 'copy-options-popup';
-                copyOptionsPopup.style.display = 'none';
+                // Célula para os novos botões de cópia diretos
+                const actionCell = document.createElement('td');
+                actionCell.className = 'copy-buttons-container'; // Aplica o flexbox para os botões
 
                 const copyFormattedBtn = document.createElement('button');
-                copyFormattedBtn.className = 'copy-option-btn';
+                copyFormattedBtn.className = 'copy-option-btn-direct';
                 copyFormattedBtn.textContent = 'Copy Formatted';
                 copyFormattedBtn.onclick = () => {
                     copyToClipboard(formattedTextForCopy.trim());
-                    copyOptionsPopup.style.display = 'none';
                 };
-                copyOptionsPopup.appendChild(copyFormattedBtn);
+                actionCell.appendChild(copyFormattedBtn);
 
                 const copyRawJsonBtn = document.createElement('button');
-                copyRawJsonBtn.className = 'copy-option-btn';
+                copyRawJsonBtn.className = 'copy-option-btn-direct';
                 copyRawJsonBtn.textContent = 'Copy Raw JSON';
                 copyRawJsonBtn.onclick = () => {
                     copyToClipboard(JSON.stringify(item, null, 2));
-                    copyOptionsPopup.style.display = 'none';
                 };
-                copyOptionsPopup.appendChild(copyRawJsonBtn);
+                actionCell.appendChild(copyRawJsonBtn);
 
-                copyCell.appendChild(copyOptionsPopup);
-                row.appendChild(copyCell);
-
-                // Event listener para o botão "Copy"
-                copyButton.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    document.querySelectorAll('.copy-options-popup').forEach(popup => {
-                        if (popup !== copyOptionsPopup) {
-                            popup.style.display = 'none';
-                        }
-                    });
-                    
-                    // Mostra o popup para que suas dimensões possam ser calculadas
-                    copyOptionsPopup.style.display = 'flex'; 
-
-                    const buttonRect = copyButton.getBoundingClientRect();
-                    const popupWidth = copyOptionsPopup.offsetWidth;
-                    const popupHeight = copyOptionsPopup.offsetHeight;
-                    const viewportWidth = window.innerWidth;
-                    const viewportHeight = window.innerHeight;
-
-                    // Calcula a posição final do pop-up em relação à viewport
-                    let finalLeft = buttonRect.right + 5; // Tenta posicionar 5px à direita do botão
-                    if (finalLeft + popupWidth > viewportWidth) {
-                        // Não há espaço suficiente à direita, posiciona à esquerda do botão
-                        finalLeft = buttonRect.left - popupWidth - 5; // 5px de espaçamento à esquerda
-                    }
-
-                    // Posicionamento vertical: Centralizado com o botão, ajustando se sair da tela
-                    let finalTop = buttonRect.top + (buttonRect.height / 2) - (popupHeight / 2);
-
-                    // Ajusta se o pop-up for cortado na parte superior ou inferior da viewport
-                    if (finalTop < 0) { // Se o topo for negativo (cortado acima)
-                        finalTop = 5; // Alinha com o topo da viewport com uma pequena margem
-                    } else if (finalTop + popupHeight > viewportHeight) { // Se a parte inferior for cortada
-                        finalTop = viewportHeight - popupHeight - 5; // Alinha com a parte inferior da viewport com uma pequena margem
-                        if (finalTop < 0) { // Se ainda for negativo, fixa no topo da viewport
-                            finalTop = 5;
-                        }
-                    }
-
-                    copyOptionsPopup.style.top = finalTop + 'px';
-                    copyOptionsPopup.style.left = finalLeft + 'px';
-                    copyOptionsPopup.style.width = buttonRect.width + 'px'; // Mantém a largura do botão
-                    copyOptionsPopup.style.position = 'fixed'; // Garante que ele se posicione em relação à viewport
-                });
+                row.appendChild(actionCell); // Adiciona a célula com os botões à linha
 
                 tbody.appendChild(row);
             });
@@ -866,7 +759,6 @@
             resultsContainer.appendChild(tableContainer);
         }
 
-        // Função para limpar todos os resultados e mensagens de erro
         function clearResults() {
             resultsContainer.innerHTML = '';
             hideErrorMessage();
@@ -881,7 +773,6 @@
             selectItems[0].classList.add('same-as-selected');
         }
 
-        // Função principal para fazer a chamada da API
         async function performSearch() {
             const query = queryInput.value.trim();
             const type = queryTypeDisplay.getAttribute('data-value');
@@ -937,42 +828,36 @@
             }
         }
 
-        // --- Lógica do Dropdown Customizado ---
-        queryTypeDisplay.addEventListener('click', function(e) {
+        const queryTypeDisplayClickHandler = function(e) {
             e.stopPropagation();
             closeAllSelect(this);
             queryTypeOptions.classList.toggle('select-hide');
             this.classList.toggle('select-arrow-active');
-        });
+        };
 
-        for (let i = 0; i < selectItems.length; i++) {
-            selectItems[i].addEventListener('click', function(e) {
-                queryTypeDisplay.innerHTML = this.innerHTML;
-                queryTypeDisplay.setAttribute('data-value', this.getAttribute('data-value'));
+        const selectItemClickHandler = function(e) {
+            queryTypeDisplay.innerHTML = this.innerHTML;
+            queryTypeDisplay.setAttribute('data-value', this.getAttribute('data-value'));
 
-                for (let j = 0; j < selectItems.length; j++) {
-                    selectItems[j].classList.remove('same-as-selected');
-                }
-                this.classList.add('same-as-selected');
+            for (let j = 0; j < selectItems.length; j++) {
+                selectItems[j].classList.remove('same-as-selected');
+            }
+            this.classList.add('same-as-selected');
 
-                queryTypeOptions.classList.add('select-hide');
-                queryTypeDisplay.classList.remove('select-arrow-active');
-            });
-        }
+            queryTypeOptions.classList.add('select-hide');
+            queryTypeDisplay.classList.remove('select-arrow-active');
+        };
 
         function closeAllSelect(elmnt) {
-            const arrNo = [];
             const x = document.getElementsByClassName("select-items");
             const y = document.getElementsByClassName("select-selected");
             for (let i = 0; i < y.length; i++) {
-                if (elmnt == y[i]) {
-                    arrNo.push(i)
-                } else {
+                if (elmnt !== y[i]) {
                     y[i].classList.remove("select-arrow-active");
                 }
             }
             for (let i = 0; i < x.length; i++) {
-                if (arrNo.indexOf(i)) {
+                if (elmnt !== x[i] && !x[i].contains(elmnt)) {
                     x[i].classList.add("select-hide");
                 }
             }
@@ -980,23 +865,21 @@
 
         document.addEventListener('click', (e) => {
             closeAllSelect(e.target);
-            document.querySelectorAll('.copy-options-popup').forEach(popup => {
-                if (!popup.contains(e.target) && !e.target.classList.contains('copy-button')) {
-                    popup.style.display = 'none';
-                }
-            });
+            // Nenhuma lógica para pop-up de cópia aqui, pois ele foi removido
         });
 
-        // Event Listeners
         searchButton.addEventListener('click', performSearch);
         clearResultsButton.addEventListener('click', clearResults);
+        queryTypeDisplay.addEventListener('click', queryTypeDisplayClickHandler);
 
-        // Inicialização do frontend
+        for (let i = 0; i < selectItems.length; i++) {
+            selectItems[i].addEventListener('click', selectItemClickHandler);
+        }
+
         window.onload = () => {
             console.log("Frontend carregado. A chave da API LeakCheck é gerenciada pelo backend Python.");
             clearResultsButton.classList.add('hidden');
         };
-
     </script>
 </body>
 </html>
