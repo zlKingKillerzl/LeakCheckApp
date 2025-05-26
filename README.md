@@ -1,68 +1,54 @@
-
 # LeakCheck API Interface
 
-A simple web application with a Flask backend that acts as a secure proxy for querying the LeakCheck API, keeping your API key safe and providing a user-friendly interface.
+A secure web app with a Flask backend acting as a proxy to the LeakCheck API. Keep your API key safe while using a modern, user-friendly interface to check if your data has been leaked.
 
 ---
 
 ## 🔑 How to Get Your LeakCheck API Key
 
 1. Go to [https://leakcheck.io/](https://leakcheck.io/).
-2. Create a free or premium account (depending on your needs).
-3. After logging in, go to: [https://leakcheck.io/account](https://leakcheck.io/account).
-4. Copy your API key from your dashboard.
+2. Create a free or premium account.
+3. Go to your account page: [https://leakcheck.io/account](https://leakcheck.io/account).
+4. Copy your API key.
 
 ---
 
-## 🔐 How to Configure Your API Key in the Project
+## 🔐 How to Configure the API Key
 
-### ✅ Option 1 — Directly in the Code (Simple)
+The API key is configured via an **environment variable** using a `.env` file (✅ safer and required):
 
-Open the `app.py` file and locate:
-
-```python
-LEAKCHECK_API_KEY = "YOUR_LEAKCHECK_API_KEY"
-```
-
-Replace `"YOUR_LEAKCHECK_API_KEY"` with your actual API key.
-
-### ✅ Option 2 — Using Environment Variables (Recommended)
-
-In the `app.py` file, change:
-
-```python
-LEAKCHECK_API_KEY = os.getenv("LEAKCHECK_API_KEY")
-```
-
-Then, create a `.env` file in the project root with:
+1. Create a file named `.env` in the project root:
 
 ```
-LEAKCHECK_API_KEY=YOUR_API_KEY
+LEAKCHECK_API_KEY=YOUR_API_KEY_HERE
 ```
 
-At the top of `app.py`, add:
+2. The backend automatically loads this file with:
 
 ```python
 from dotenv import load_dotenv
 load_dotenv()
 ```
 
-Install the package if needed:
-
-```bash
-pip install python-dotenv
-```
+⚠️ If the key is missing, the backend will throw an error and refuse to run.
 
 ---
 
 ## 🖥️ Features
 
-- 🔍 **LeakCheck API Queries:** Search by email, domain, username, phone, IP, hash, etc.
-- 🖥️ **Modern UI:** Dark theme with purple and blue accents.
-- 📊 **Results Display:** Clean table with sorting and filtering.
-- 📤 **Data Export:** PDF, JSON, or TXT.
-- 📋 **Copy Buttons:** Copy formatted data or raw JSON.
-- 🔐 **Backend Proxy (Flask):** Your API key is never exposed to the frontend.
+- 🔐 API key secured in backend (never exposed to frontend)
+- 🚫 Rate limiting (default: 10 requests per minute, 5 requests per endpoint)
+- 🔍 Query by:
+  - Email, username, phone, domain, hash, IP, etc.
+- 🎨 Modern UI with dark theme
+- 📑 Clean results table with source and last breach info
+- 📋 Copy results (formatted or raw JSON)
+- 📤 Export to PDF, JSON, TXT
+- 🔥 Clear error handling for:
+  - Connection errors
+  - API timeouts
+  - Missing API key
+  - Invalid queries
 
 ---
 
@@ -70,67 +56,53 @@ pip install python-dotenv
 
 ```
 LeakCheckApp/
-├── app.py                # Flask Backend (API Proxy and Web Server)
-├── index.html             # Web Frontend
-├── requirements.txt       # Python Dependencies
-├── Dockerfile             # Docker Image
-├── docker-compose.yml     # Docker Compose
-└── README.md              # This file
+├── app.py                # Flask backend (API proxy + web server)
+├── index.html             # Web frontend
+├── requirements.txt       # Python dependencies
+├── Dockerfile             # Docker container (optional)
+├── docker-compose.yml     # Docker Compose (optional)
+└── README.md              # Documentation
 ```
 
 ---
 
-## 🚀 Installation and Running
+## 🚀 Installation & Running
 
 ### ✅ Prerequisites
 
 - Python 3.8+
 - pip
-- (Optional) Conda
-- Docker and Docker Compose (optional)
+- (Optional) Docker and Docker Compose
 
-### 🔧 Option 1 — Running Locally with Python
-
-#### ▶️ Using Virtual Environment (`venv`)
+### 🔧 Local Run (Recommended)
 
 ```bash
 cd LeakCheckApp
 
 python -m venv venv
-
-# Activate:
-# Windows:
-venv\Scripts\activate
-# macOS/Linux:
-source venv/bin/activate
+source venv/bin/activate  # On Windows: venv\Scripts\ctivate
 
 pip install -r requirements.txt
+
+# Create .env file with:
+# LEAKCHECK_API_KEY=YOUR_API_KEY
 
 python app.py
 ```
 
-Access:
+Access the web app at:
 
 ```
 http://127.0.0.1:5000
 ```
 
-#### ▶️ Using Conda
-
-```bash
-conda create -n leakcheck python=3.10
-conda activate leakcheck
-pip install -r requirements.txt
-python app.py
-```
-
 ---
 
-### 🐳 Running with Docker
+### 🐳 Docker
 
-#### ▶️ Using Docker Compose (Recommended)
+**Using Docker Compose:**
 
-1. Set your API key in `docker-compose.yml`:
+1. Edit `docker-compose.yml`:
 
 ```yaml
 environment:
@@ -143,13 +115,7 @@ environment:
 docker-compose up --build
 ```
 
-Access:
-
-```
-http://localhost:5000
-```
-
-#### ▶️ Running with Docker Manually
+**Manual Docker run:**
 
 ```bash
 docker build -t leakcheckapp .
@@ -158,61 +124,39 @@ docker run -p 5000:5000 -e LEAKCHECK_API_KEY=YOUR_API_KEY leakcheckapp
 
 ---
 
-## 🌐 How to Use the Web Interface
+## 🌐 Using the Web Interface
 
-1. Open:
-
-```
-http://localhost:5000
-```
-
-2. Enter **"Information"** such as:
-   - Email, domain, username, phone, hash, or IP.
-3. Select the type in the dropdown:
-   - `email`, `username`, `domain`, `phone`, `hash`, `ip`.
-4. Click **"Search"**.
-5. View the results in the table:
-   - Leaked data.
-   - Source of the leak.
-   - Date of the last breach.
-6. Use:
-   - **Copy Formatted:** Copies nicely formatted data.
-   - **Copy Raw JSON:** Copies raw JSON data.
-7. Export data:
-   - PDF, JSON, or TXT.
-8. Click **"Clear Results"** to reset the search.
+1. Visit `http://localhost:5000`.
+2. Enter the info (email, username, domain, etc.).
+3. Select the type (or use auto).
+4. Click **Search**.
+5. View leaks, source, and breach date.
+6. Copy or export the results (PDF, JSON, TXT).
+7. Clear results to start a new search.
 
 ---
 
-## 🔗 How to Use the REST API
+## 🔗 Using the REST API
 
-### 📍 Base URL
+**Base URL:**
 
 ```
 http://localhost:5000/api/v2/query/
 ```
 
-### 📥 Request Examples
-
-#### 🔎 Search by Email
+**Example Request:**
 
 ```bash
-curl -X GET "http://localhost:5000/api/v2/query/example@example.com"
+curl "http://localhost:5000/api/v2/query/example@example.com"
 ```
 
-#### 🔎 Search by Domain
+**With type:**
 
 ```bash
-curl -X GET "http://localhost:5000/api/v2/query/gmail.com?type=domain"
+curl "http://localhost:5000/api/v2/query/example.com?type=domain"
 ```
 
-#### 🔎 Search by Username
-
-```bash
-curl -X GET "http://localhost:5000/api/v2/query/username_example?type=username"
-```
-
-### 🔄 Example Response
+**Example Response:**
 
 ```json
 {
@@ -221,12 +165,12 @@ curl -X GET "http://localhost:5000/api/v2/query/username_example?type=username"
   "success": true,
   "result": [
     {
-      "source": "ExampleLeak2022",
-      "last_breach": "2022-10-10",
-      "data": {
-        "password": "hashedpassword123",
-        "ip": "192.168.0.1"
-      }
+      "source": {
+        "name": "ExampleLeak",
+        "breach_date": "2023-01-01"
+      },
+      "email": "example@example.com",
+      "password": "hashedpassword"
     }
   ]
 }
@@ -234,11 +178,12 @@ curl -X GET "http://localhost:5000/api/v2/query/username_example?type=username"
 
 ---
 
-## ⚠️ Important Notes
+## ⚠️ Notes
 
-- ✅ Your LeakCheck API key is **required** for the backend to work.
-- 🔒 Your key is safe and never exposed to the frontend.
-- 🚫 This project **does not store any data locally**, it only proxies requests to the LeakCheck API.
+- Your API key is **required**.
+- Key is **never exposed** to the frontend.
+- ✅ The backend includes rate limiting and error handling.
+- No data is stored locally. This is a read-only proxy.
 
 ---
 
